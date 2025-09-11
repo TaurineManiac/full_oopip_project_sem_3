@@ -1,4 +1,6 @@
 #include "lab_1.h"
+
+#include <fstream>
 #include <generate.h>
 #include <inputCheck.h>
 #include <iomanip>
@@ -100,7 +102,7 @@ Smartphone::Smartphone() {
     Hertz=0;
 }
 
-Smartphone::Smartphone(const Smartphone &other) {
+Smartphone::Smartphone(const Smartphone &other) : Phone(other) {
     isHaveESim=other.isHaveESim;
     isInBasket=other.isInBasket;
     Hertz=other.Hertz;
@@ -115,9 +117,9 @@ ListOfSmartphones::ListOfSmartphones(const ListOfSmartphones &other) {
 }
 
 ListOfSmartphones::~ListOfSmartphones() {
-    for (int i=0; i<smartphones.size(); i++) {
-        smartphones[i].~Smartphone();
-    }
+    // for (int i=0; i<smartphones.size(); i++) {
+    //     smartphones[i].~Smartphone();
+    // }
 }
 
 void ListOfSmartphones::addSmartphoneToList(Smartphone smartphone) {
@@ -150,17 +152,20 @@ void ListOfSmartphones::printListOfSmartphones(vector<Smartphone>& list) {
     cout << "╚═════╩════════════════════════════════════════════════════════════════════════════════════════════════════════════╝" << endl;
 }
 
+std::vector<Smartphone> ListOfSmartphones::getSmartphones() {
+    return smartphones;
+}
 
-// Вспомогательный метод для вывода деталей одного смартфона
+
 void ListOfSmartphones::printSmartphoneDetails(Smartphone& phone) {
-    cout << "Модель: " << setw(15) << left << phone.getModel()
-         << " | Цена: " << setw(8) << phone.getPrice() << "$"
-         << " | Батарея: " << setw(5) << phone.getBatteryLevel() << "%"
-         << " | Герцовка: " << setw(4) << phone.getHertz() << "Hz"
+    cout << "Модель: " << setw(10) << left << phone.getModel()
+         << " | Цена: " << setw(5) << phone.getPrice() << "$"
+         << " | Батарея: " << setw(5) << phone.getBatteryLevel() << "mWh"
+         << " | Герцовка: " << setw(4) << phone.getHertz() << "HHz"
          << " | eSIM: " << setw(3) << (phone.getIsHaveESim() ? "Да" : "Нет")
          << " | Кнопки: " << setw(3) << (phone.getIsHaveButton() ? "Да" : "Нет")
-         << " | Б/У: " << setw(3) << (phone.getIsUsed() ? "Да" : "Нет")
-         << " | В корзине: " << setw(3) << (phone.getIsInBasket() ? "Да" : "Нет");
+         << " | Б/У: " << setw(3) << (phone.getIsUsed() ? "Да" : "Нет");
+         // << " | В корзине: " << setw(3) << (phone.getIsInBasket() ? "Да" : "Нет");
 }
 
 void ListOfSmartphones::changeSmartphoneFromList(int index) {
@@ -399,6 +404,11 @@ void Basket::addSmartphoneToList(Smartphone smartphone) {
     smartphones.push_back(smartphone);
 }
 
+std::vector<Smartphone> Basket::getSmartphones() {
+    return smartphones;
+}
+
+
 void Basket::printListOfSmartphones(std::vector<Smartphone> &newList) {
     if (newList.empty()) {
         cout << "╔════════════════════════════════════════════════════════════════════════════════════════════════════════════╗" << endl;
@@ -432,8 +442,8 @@ void Basket::printSmartphoneDetails(Smartphone &phone) {
      << " | Герцовка: " << setw(4) << phone.getHertz() << "Hz"
      << " | eSIM: " << setw(3) << (phone.getIsHaveESim() ? "Да" : "Нет")
      << " | Кнопки: " << setw(3) << (phone.getIsHaveButton() ? "Да" : "Нет")
-     << " | Б/У: " << setw(3) << (phone.getIsUsed() ? "Да" : "Нет")
-     << " | В корзине: " << setw(3) << (phone.getIsInBasket() ? "Да" : "Нет");
+     << " | Б/У: " << setw(3) << (phone.getIsUsed() ? "Да" : "Нет");
+     // << " | В корзине: " << setw(3) << (phone.getIsInBasket() ? "Да" : "Нет");
 }
 
 void Basket::sortCopyOfListOfSmartphones() {
@@ -637,6 +647,309 @@ void Basket::searchSmartphonePerParameter() {
         cout << "Совпадений не найдено." << endl;
     }
 }
+
+void Catalog::printListOfSmartphones() {
+    std::vector<Smartphone> smartphones = listOfSmartphones->getSmartphones();
+    listOfSmartphones->printListOfSmartphones(smartphones);
+}
+
+void Catalog::addSmartphoneToBasket() {
+    cout << "Выберите смартфон из списка,который вы хотите добавить в корзину:" << endl;
+    printListOfSmartphones();
+    int choice=99999;
+    while (choice <0 || choice>= listOfSmartphones->getSmartphones().size()) {
+        choice = mylib::checkTryToInputInt();
+    }
+    listOfSmartphones->getSmartphones()[choice].setIsInBasket(1);
+    basket->addSmartphoneToList(listOfSmartphones->getSmartphones()[choice]);
+}
+
+void Catalog::addSmartphoneToList() {
+    Smartphone smartphone;
+    cout << "Введите модель смартфона:" << endl;
+    smartphone.setModel(mylib::checkTryToInputString(false));
+    cout << "Введите мощность батареи:" << endl;
+    smartphone.setBatteryLevel(mylib::checkTryToInputDouble());
+    cout << "Введите герцовку:" << endl;
+    smartphone.setHertz(mylib::checkTryToInputDouble());
+    cout << "Введите цену:" << endl;
+    smartphone.setPrice(mylib::checkTryToInputDouble());
+
+    int choice=5;
+    cout << "Введите является ли этот смартфон Б/У(Введите 0/1):" << endl;
+    while (choice != 1 && choice != 0) {
+        choice= mylib::checkTryToInputInt();
+    }
+    smartphone.setIsUsed(choice);
+    choice =5;
+    cout << "Введите есть ли у этого смартфона физические кнопки(Введите 0/1):" << endl;
+    while (choice != 1 && choice != 0) {
+        choice= mylib::checkTryToInputInt();
+    }
+    smartphone.setIsHaveButton(choice);
+    choice =5;
+    cout << "Введите поддерживает ли смартфон eSim(Введите 0/1):" << endl;
+    while (choice != 1 && choice != 0) {
+        choice= mylib::checkTryToInputInt();
+    }
+    smartphone.setIsHaveESim(choice);
+
+
+
+    listOfSmartphones->addSmartphoneToList(smartphone);
+}
+
+Catalog::Catalog() {
+    basket = new Basket();
+    listOfSmartphones = new ListOfSmartphones();
+}
+
+Basket *Catalog::getBasket() {
+    return basket;
+}
+
+ListOfSmartphones* Catalog::getListOfSmartphones() {
+    return listOfSmartphones;
+}
+
+Catalog::Catalog(Catalog &other) {
+    basket = other.getBasket();
+    listOfSmartphones = other.getListOfSmartphones();
+}
+
+void Catalog::changeSmartphoneFromList(int index) {
+    listOfSmartphones->changeSmartphoneFromList(index);
+}
+
+void Catalog::printBasketOfSmartphones() {
+    std::vector<Smartphone> smartphones = basket->getSmartphones();
+    basket->printListOfSmartphones(smartphones);
+}
+
+
+
+Catalog::~Catalog()  {
+    // basket->~Basket();
+    // listOfSmartphones->~ListOfSmartphones();
+    delete basket;
+    delete listOfSmartphones;
+}
+
+void Catalog::removeSmartphoneFromBasket(int index) {
+    basket->removeSmartphoneFromList(index);
+}
+
+void Catalog::removeSmartphoneFromList(int index) {
+    listOfSmartphones->removeSmartphoneFromList(index);
+}
+
+void Catalog::searchSmartphonePerParameterInBasket() {
+    basket->searchSmartphonePerParameter();
+}
+
+void Catalog::searchSmartphonePerParameterInList() {
+    listOfSmartphones->searchSmartphonePerParameterInList();
+}
+
+void Catalog::sortCopyOfBasketOfSmartphones() {
+    basket->sortCopyOfListOfSmartphones();
+}
+
+void Catalog::sortCopyOfListOfSmartphones() {
+    listOfSmartphones->sortCopyOfListOfSmartphones();
+}
+
+void Catalog::loadSmartphonesFromFile() {
+
+    ifstream file("ListOfPhones.txt", std::ios::in);
+
+    if (!file.is_open()) {
+        cout << "Файл не нашёлся" << endl;
+        return;
+    }
+
+    string line;
+    while (getline(file,line)) {
+        Smartphone smartphone;
+        int pos ;
+        string cut;
+        int num=0;
+
+       while ((pos=line.find(';')) != string::npos) {
+           cut=line.substr(0 ,pos);
+           switch (num) {
+               case 0: smartphone.setModel(cut); break;
+               case 1: smartphone.setHertz(stod(cut)); break;
+               case 2: smartphone.setBatteryLevel(stod(cut)); break;
+               case 3: smartphone.setPrice(stod(cut)); break;
+               case 4: smartphone.setIsHaveButton(stoi(cut)); break;
+               case 5: smartphone.setIsHaveESim(stoi(cut)); break;
+               case 6: smartphone.setIsInBasket(stoi(cut)); break;
+               case 7: smartphone.setIsUsed(stoi(cut)); break;
+                   default: break;
+           }
+           line.erase(0,pos+1);
+           num++;
+
+
+        }
+        listOfSmartphones->addSmartphoneToList(smartphone);
+
+    }
+
+
+}
+
+
+
+FinalCatalog::FinalCatalog() {
+    catalog = new Catalog();
+}
+
+FinalCatalog::FinalCatalog(Catalog &other) {
+    catalog = &other;
+}
+
+FinalCatalog::~FinalCatalog() {
+    // catalog->~Catalog();
+    delete catalog;
+}
+
+void FinalCatalog::start() {
+    while (true) {
+        int choice;
+        cout << "Выберите действие:" << endl;
+        cout << "1. Перейти в корзину" << endl;
+        cout << "2. Перейти в каталог" << endl;
+        cout << "3. Выйти." << endl;
+        choice = mylib::checkYourSolution(3);
+        switch (choice) {
+            case 1:
+                workWithBasket();
+                break;
+            case 2:
+                workWithListOfSmartphones();
+                break;
+            case 3:
+                return;
+                break;
+            default:
+                break;
+        }
+
+    }
+}
+
+void FinalCatalog::workWithListOfSmartphones() {
+    while (1) {
+        cout << "Выберите действие:" << endl;
+        cout << "1. Показать каталог смартфонов" << endl;
+        cout << "2. Добавить смартфон в каталог" << endl;
+        cout << "3. Редактировать смартфон из каталога" << endl;
+        cout << "4. Найти смартфон из каталога" << endl;
+        cout << "5. Сортировать каталог по критерию" << endl;
+        cout << "6. Удалить смартфон из каталога" << endl;
+        cout << "7. Выход" << endl;
+        int choice;
+        choice = mylib::checkYourSolution(7);
+        switch (choice) {
+            case 1:
+                catalog->printListOfSmartphones();
+                break;
+            case 2:
+                catalog->addSmartphoneToList();
+                break;
+            case 3: {
+                cout << "Выберите смартфон, который хотите изменить:" << endl;
+                catalog->printListOfSmartphones();
+                int choiceInChange=99999999999;
+                while (choiceInChange<0 || choiceInChange>=catalog->getListOfSmartphones()->getSmartphones().size()) {
+                    choiceInChange = mylib::checkTryToInputInt();
+                }
+                catalog->changeSmartphoneFromList(choiceInChange);
+                break;
+            }
+
+            case 4:
+                catalog->searchSmartphonePerParameterInList();
+                break;
+            case 5:
+                catalog->sortCopyOfListOfSmartphones();
+                break;
+            case 6: {
+                cout << "Выберите смартфон, который хотите удалить из списка:" << endl;
+                catalog->printListOfSmartphones();
+                int choiceInChange=999999999999999;
+                while (choiceInChange<0 || choiceInChange>=catalog->getListOfSmartphones()->getSmartphones().size()) {
+                    choiceInChange = mylib::checkTryToInputInt();
+                }
+                catalog->removeSmartphoneFromList(choiceInChange);
+                break;
+            }
+
+            case 7:
+                return;
+                break;
+            default:
+                break;
+        }
+
+    }
+}
+
+void FinalCatalog::workWithBasket() {
+    while (1) {
+          cout << "Выберите действие:" << endl;
+        cout << "1. Показать корзину смартфонов" << endl;
+        cout << "2. Добавить смартфон в корзину" << endl;
+        cout << "3. Найти смартфон из корзины" << endl;
+        cout << "4. Сортировать корзину по критерию" << endl;
+        cout << "5. Удалить смартфон из корзины" << endl;
+        cout << "6. Выход" << endl;
+        int choice;
+        choice = mylib::checkYourSolution(6);
+        switch (choice) {
+            case 1:
+                catalog->printBasketOfSmartphones();
+                break;
+            case 2:
+                catalog->addSmartphoneToBasket();
+                break;
+            case 3:
+                catalog->searchSmartphonePerParameterInBasket();
+                break;
+            case 4:
+                catalog->sortCopyOfBasketOfSmartphones();
+                break;
+            case 5: {
+                cout << "Выберите смартфон, который хотите удалить из корзины:" << endl;
+                catalog->printBasketOfSmartphones();
+                int choiceInChange=999999999999999;
+                while (choiceInChange<0 || choiceInChange>=catalog->getListOfSmartphones()->getSmartphones().size()) {
+                    choiceInChange = mylib::checkTryToInputInt();
+                }
+                catalog->removeSmartphoneFromBasket(choiceInChange);
+                break;
+            }
+
+            case 6:
+                return;
+                break;
+            default:
+                break;
+        }
+    }
+
+
+}
+
+Catalog *FinalCatalog::getCatalog() {
+    return catalog;
+}
+
+
+
+
 
 
 
