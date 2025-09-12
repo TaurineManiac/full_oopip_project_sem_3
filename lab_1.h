@@ -66,6 +66,8 @@ class ListOfSmartphones {
   void searchSmartphonePerParameterInList();
   void sortCopyOfListOfSmartphones();
   void printSmartphoneDetails(Smartphone& phone);
+
+  std::vector<Smartphone> getSmartphones();
 };
 
 class Basket {
@@ -81,6 +83,8 @@ class Basket {
   void searchSmartphonePerParameter();
   void sortCopyOfListOfSmartphones();
   void printSmartphoneDetails(Smartphone& phone);
+
+  std::vector<Smartphone> getSmartphones();
 };
 
 class Catalog {
@@ -90,25 +94,39 @@ class Catalog {
 
 public:
   Catalog();
-  Catalog(const Catalog &other);
+  Catalog(Catalog &other);
   ~Catalog();
   void loadSmartphonesFromFile();
 
   void printListOfSmartphones();
   void removeSmartphoneFromList(int index);
-  void addSmartphoneToList(Smartphone smartphone);
+  void addSmartphoneToList();
   void changeSmartphoneFromList(int index);
   void searchSmartphonePerParameterInList();
   void sortCopyOfListOfSmartphones();
 
-  void getBasketOfSmartphones();
+  void printBasketOfSmartphones();
   void removeSmartphoneFromBasket(int index);
-  void addSmartphoneToBasket(Smartphone smartphone);
+  void addSmartphoneToBasket();
   void searchSmartphonePerParameterInBasket();
   void sortCopyOfBasketOfSmartphones();
+
+  Basket* getBasket();
+  ListOfSmartphones* getListOfSmartphones();
 };
 
 
-
+class FinalCatalog {
+  private:
+  Catalog* catalog;
+  public:
+  FinalCatalog();
+  FinalCatalog(Catalog &other);
+  ~FinalCatalog();
+  void start();
+  void workWithBasket();
+  void workWithListOfSmartphones();
+  Catalog* getCatalog();
+};
 
 #endif //FULL_OOPIP_PROJECT_SEM_3_LAB_1_H

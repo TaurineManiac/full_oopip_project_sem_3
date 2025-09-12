@@ -2,7 +2,7 @@
 #include <windows.h>
 #include <generate.h>
 #include <inputCheck.h>
-#include <lab_1.h>
+#include "lab_1.h"
 
 using namespace std;
 using namespace generate;
@@ -20,13 +20,17 @@ int main() {
         int numOfLabChoice = checkYourSolution(8);
 
         switch (numOfLabChoice) {
-            case 1:
+            case 1: {
                 cout << "В каждом индивидуальном задании необходимо реализовать функции просмотра, добавления, удаления, редактирования, сортировки, поиска данных по необходимым параметрам."
                         " Использовать минимум 5 флагов форматирования. Сформировать табличный вывод всех данных."
                         " Использовать функции setf() и unsetf() для установки и сбрасывания флагов. Использовать функции eof(), fail(), good(), bad(), clear() для проверки состояния потока. " << endl;
                 cout << "29.Разработать набор классов (минимум 5 классов, связи между классами: агрегация, композиция, наследование) по предметной области «Каталог мобильных устройств»."
                         " Функционал программы должен позволить собрать данные заказе.  " << endl;
+                FinalCatalog* catalog= new FinalCatalog();
+                catalog->getCatalog()->loadSmartphonesFromFile();
+                catalog->start();
                 break;
+            }
             case 2:
                 cout << "Лаба ещё не готова!" << endl;
                 break;
