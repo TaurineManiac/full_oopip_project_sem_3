@@ -30,7 +30,7 @@ Phone::Phone(const Phone &anotherPhone) {
 
 }
 
-double Phone::getBatteryLevel() {
+double Phone::getBatteryLevel() const {
     return BatteryLevel;
 }
 
@@ -38,27 +38,27 @@ void Phone::setBatteryLevel(double newBatteryLevel) {
     BatteryLevel=newBatteryLevel;
 }
 
-bool Phone::getIsHaveButton() {
+bool Phone::getIsHaveButton() const {
     return isHaveButton;
 }
 
-void Phone::setIsHaveButton(bool newIsHaveButton) {
+void Phone::setIsHaveButton(const bool newIsHaveButton) {
     isHaveButton=newIsHaveButton;
 }
 
-double Phone::getPrice() {
+double Phone::getPrice() const {
     return price;
 }
 
-void Phone::setPrice(double newPrice) {
+void Phone::setPrice(const double newPrice) {
     price=newPrice;
 }
 
-bool Phone::getIsUsed() {
+bool Phone::getIsUsed() const {
     return isUsed;
 }
 
-void Phone::setIsUsed(bool newIsUsed) {
+void Phone::setIsUsed(const bool newIsUsed) {
     isUsed=newIsUsed;
 }
 
@@ -216,14 +216,8 @@ void ListOfSmartphones::removeSmartphoneFromList(int index) {
 
 void ListOfSmartphones::searchSmartphonePerParameterInList() {
     cout << "Выберите параметр по какому хотите искать (1-7, 8-Выход):" << endl;
-    cout << "1. Цена\n"
-            "2. Б/У\n"
-            "3. Герцовка\n"
-            "4. Имеет eSim\n"
-            "5. Мощность батареи\n"
-            "6. Модель\n"
-            "7. Имеет физические кнопки\n"
-            "8. Выход" << endl;
+    generate::generateChooseMenu(1,true,"Цена","Б/У","Герцовка","Имеет eSim","Мощность батареи","Модель",
+        "Имеет физические кнопки","Выход");
 
     int choice = mylib::checkYourSolution(8);
     bool found = false; // флаг совпадений
@@ -337,14 +331,8 @@ void ListOfSmartphones::sortCopyOfListOfSmartphones() {
     vector<Smartphone> smartphonesCopy = smartphones;
 
     cout << "Выберите критерий для сортировки:" << endl;
-    cout << "1. Цена\n"
-            "2. Б/У\n"
-            "3. Герцовка\n"
-            "4. Имеет eSim\n"
-            "5. Мощность батареи\n"
-            "6. Модель\n"
-            "7. Имеет физические кнопки\n"
-            "8. Выход" << endl;
+    generate::generateChooseMenu(1,true,"Цена","Б/У","Герцовка","Имеет eSim","Мощность батареи","Модель",
+        "Имеет физические кнопки","Выход");
 
     int choice = mylib::checkYourSolution(8);
 
@@ -456,14 +444,8 @@ void Basket::sortCopyOfListOfSmartphones() {
     vector<Smartphone> smartphonesCopy = smartphones;
 
     cout << "Выберите критерий для сортировки:" << endl;
-    cout << "1. Цена\n"
-            "2. Б/У\n"
-            "3. Герцовка\n"
-            "4. Имеет eSim\n"
-            "5. Мощность батареи\n"
-            "6. Модель\n"
-            "7. Имеет физические кнопки\n"
-            "8. Выход" << endl;
+    generate::generateChooseMenu(1,true,"Цена","Б/У","Герцовка","Имеет eSim","Мощность батареи","Модель",
+        "Имеет физические кнопки","Выход");
 
     int choice = mylib::checkYourSolution(8);
 
@@ -697,6 +679,7 @@ void Catalog::addSmartphoneToList() {
 
 
     listOfSmartphones->addSmartphoneToList(smartphone);
+    rewriteSmartphonesInFile();
 }
 
 Catalog::Catalog() {
@@ -719,6 +702,7 @@ Catalog::Catalog(Catalog &other) {
 
 void Catalog::changeSmartphoneFromList(int index) {
     listOfSmartphones->changeSmartphoneFromList(index);
+    rewriteSmartphonesInFile();
 }
 
 void Catalog::printBasketOfSmartphones() {
@@ -800,6 +784,57 @@ void Catalog::loadSmartphonesFromFile() {
 
 }
 
+void Catalog::inputSmartphoneIntoFile(Smartphone smartphone) {
+    ofstream file;
+    file.open("ListOfPhonesChangeable.txt", std::ios::app);
+    if (!file.bad()) {
+        file << smartphone.getModel() ;
+        file << ';';
+        file << smartphone.getHertz() ;
+        file << ';';
+        file << smartphone.getBatteryLevel() ;
+        file << ';';
+        file << smartphone.getPrice();
+        file << ';';
+        file << smartphone.getIsHaveButton() ;
+        file << ';';
+        file << smartphone.getIsHaveESim();
+        file << ';';
+        file << smartphone.getIsInBasket();
+        file << ';';
+        file << smartphone.getIsUsed();
+        file << '\n';
+
+    }
+    file.close();
+
+}
+
+int Catalog::chooseSmartphoneInFile() {
+    cout << "Выберите смартфон, который хотите удалить('-1' -Выход):" << endl;
+    printListOfSmartphones();
+    int choose = mylib::checkTryToInputInt();
+    while (choose<-1 || choose>listOfSmartphones->getSmartphones().size()-1) {
+        cout << "Число выходит за пределы диапозана, повторите ввод" << endl;
+        choose = mylib::checkTryToInputInt();
+    }
+    return choose;
+}
+
+void Catalog::rewriteSmartphonesInFile() {
+    ofstream file("ListOfPhonesChangeable.txt", ios::trunc);
+    file.close();
+    for (int i = 0; i < listOfSmartphones->getSmartphones().size(); i++) {
+        inputSmartphoneIntoFile(listOfSmartphones->getSmartphones()[i]);
+    }
+}
+
+
+void Catalog::deleteSmartphoneFromFile() {
+    int choose = chooseSmartphoneInFile();
+    listOfSmartphones->removeSmartphoneFromList(choose);
+    rewriteSmartphonesInFile();
+}
 
 
 FinalCatalog::FinalCatalog() {
@@ -819,9 +854,7 @@ void FinalCatalog::start() {
     while (true) {
         int choice;
         cout << "Выберите действие:" << endl;
-        cout << "1. Перейти в корзину" << endl;
-        cout << "2. Перейти в каталог" << endl;
-        cout << "3. Выйти." << endl;
+        generate::generateChooseMenu(1,true,"Перейти в корзину", "Перейти в каталог", "Выйти");
         choice = mylib::checkYourSolution(3);
         switch (choice) {
             case 1:
@@ -843,13 +876,9 @@ void FinalCatalog::start() {
 void FinalCatalog::workWithListOfSmartphones() {
     while (1) {
         cout << "Выберите действие:" << endl;
-        cout << "1. Показать каталог смартфонов" << endl;
-        cout << "2. Добавить смартфон в каталог" << endl;
-        cout << "3. Редактировать смартфон из каталога" << endl;
-        cout << "4. Найти смартфон из каталога" << endl;
-        cout << "5. Сортировать каталог по критерию" << endl;
-        cout << "6. Удалить смартфон из каталога" << endl;
-        cout << "7. Выход" << endl;
+        generate::generateChooseMenu(1,true,"Показать каталог смартфонов","Добавить смартфон в каталог",
+            "Редактировать смартфон из каталога","Найти смартфон из каталога","Сортировать каталог по критерию"
+            ,"Удалить смартфон из каталога","Выход");
         int choice;
         choice = mylib::checkYourSolution(7);
         switch (choice) {
@@ -877,14 +906,15 @@ void FinalCatalog::workWithListOfSmartphones() {
                 catalog->sortCopyOfListOfSmartphones();
                 break;
             case 6: {
-                cout << "Выберите смартфон, который хотите удалить из списка:" << endl;
-                catalog->printListOfSmartphones();
-                int choiceInChange=999999999999999;
-                while (choiceInChange<0 || choiceInChange>=catalog->getListOfSmartphones()->getSmartphones().size()) {
-                    choiceInChange = mylib::checkTryToInputInt();
-                }
-                catalog->removeSmartphoneFromList(choiceInChange);
-                break;
+                // cout << "Выберите смартфон, который хотите удалить из списка:" << endl;
+                // catalog->printListOfSmartphones();
+                // int choiceInChange=999999999999999;
+                // while (choiceInChange<0 || choiceInChange>=catalog->getListOfSmartphones()->getSmartphones().size()) {
+                //     choiceInChange = mylib::checkTryToInputInt();
+                // }
+                // catalog->removeSmartphoneFromList(choiceInChange);
+                // break;
+                catalog->deleteSmartphoneFromFile();
             }
 
             case 7:
@@ -900,12 +930,8 @@ void FinalCatalog::workWithListOfSmartphones() {
 void FinalCatalog::workWithBasket() {
     while (1) {
           cout << "Выберите действие:" << endl;
-        cout << "1. Показать корзину смартфонов" << endl;
-        cout << "2. Добавить смартфон в корзину" << endl;
-        cout << "3. Найти смартфон из корзины" << endl;
-        cout << "4. Сортировать корзину по критерию" << endl;
-        cout << "5. Удалить смартфон из корзины" << endl;
-        cout << "6. Выход" << endl;
+        generate::generateChooseMenu(1,true,"Показать корзину смартфонов","Добавить смартфон в корзину",
+            "Найти смартфон из корзины","Сортировать корзину по критерию","Удалить смартфон из корзины","Выход");
         int choice;
         choice = mylib::checkYourSolution(6);
         switch (choice) {

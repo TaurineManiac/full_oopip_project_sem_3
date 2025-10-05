@@ -20,14 +20,14 @@ public:
   Phone(const Phone &other);
   ~Phone()=default;
   void setBatteryLevel(double newBatteryLevel);
-  double getBatteryLevel();
+  double getBatteryLevel() const;
   std::string getModel();
   void setModel(std::string newModel);
-  bool getIsHaveButton();
+  bool getIsHaveButton() const;
   void setIsHaveButton(bool newIsHaveButton);
-  bool getIsUsed();
+  bool getIsUsed() const;
   void setIsUsed(bool newIsUsed);
-  double getPrice();
+  double getPrice() const;
   void setPrice(double newPrice);
 };
 
@@ -97,6 +97,10 @@ public:
   Catalog(Catalog &other);
   ~Catalog();
   void loadSmartphonesFromFile();
+  void inputSmartphoneIntoFile(Smartphone smartphone);
+  int chooseSmartphoneInFile();
+  void deleteSmartphoneFromFile();
+  void rewriteSmartphonesInFile();
 
   void printListOfSmartphones();
   void removeSmartphoneFromList(int index);
