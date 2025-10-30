@@ -4,7 +4,9 @@ project(full_oopip_project_sem_3)
 set(CMAKE_CXX_STANDARD 20)
 
 # Создаем исполняемый файл
-add_executable(full_oopip_project_sem_3 main.cpp lab_1.cpp)
+add_executable(full_oopip_project_sem_3 main.cpp lab_1.cpp
+        lab_3.h
+        lab_3.cpp)
 
 # Указываем путь к заголовочным файлам
 target_include_directories(full_oopip_project_sem_3 PRIVATE ${CMAKE_SOURCE_DIR})
